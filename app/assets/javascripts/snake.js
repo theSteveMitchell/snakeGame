@@ -1,13 +1,5 @@
-$(document).ready(function(){
-    Snake.init();
 
-    //keyboard controls
-    $(document).keydown(function(e){
-        var key = e.which;
-        Snake.changeDirection(key)
-    });
-});
-var Snake = new (function (){
+var Snake = Snake || new (function (){
     //Canvas stuff
     var that = this;
     var canvas;
@@ -28,78 +20,81 @@ var Snake = new (function (){
 
     this.init = function()
     {
-        Snake.canvas = $("#canvas")[0];
-        Snake.context = Snake.canvas.getContext("2d");
-        Snake.canvasWidth = $("#canvas").width();
-        Snake.canvasHeight = $("#canvas").height();
+        canvas = $("#canvas")[0]
+        if(canvas === undefined){
+            return;
+        }
+        context = canvas.getContext("2d");
+        canvasWidth = $("#canvas").width();
+        canvasHeight = $("#canvas").height();
 
-        Snake.direction = "right"; //default direction
+        direction = "right"; //default direction
         create_snake(15);
-        Snake.create_food(); //Now we can see the food particle
+        create_food(); //Now we can see the food particle
         //finally lets display the score
         score = 0;
 
         //Lets move the snake now using a timer which will trigger the paint function
         //every 60ms
         if(typeof game_loop != "undefined") clearInterval(game_loop);
-        game_loop = setInterval(Snake.paint, 80);
+        game_loop = setInterval(paint, 80);
     };
 
 
 
-    create_snake = function(length)
+    var create_snake = function(length)
     {
         length = length || 5; //Length of the snake
-        Snake.snake_array = []; //Empty array to start with
+        snake_array = []; //Empty array to start with
         for(var i = length-1; i>=0; i--)
         {
             //This will create a horizontal snake starting from the top left
-            Snake.snake_array.push({x: i, y:0});
+            snake_array.push({x: i, y:0});
         }
     };
 
     //Lets create the food now
-    this.create_food= function()
+    var create_food= function()
     {
         foodPiece = {
-            x: Math.round(Math.random()*(Snake.w-Snake.snakeNodeWidth)/Snake.snakeNodeWidth),
-            y: Math.round(Math.random()*(Snake.canvasHeight-Snake.snakeNodeWidth)/Snake.snakeNodeWidth)
+            x: Math.round(Math.random()*(canvasWidth-snakeNodeWidth)/snakeNodeWidth),
+            y: Math.round(Math.random()*(canvasHeight-snakeNodeWidth)/snakeNodeWidth)
         };
         //This will create a cell with x/y between 0-44
         //Because there are 45(450/10) positions accross the rows and columns
     };
 
     //Lets paint the snake now
-    this.paint= function()
+    var paint= function()
     {
         //To avoid the snake trail we need to paint the BG on every frame
         //Lets paint the canvas now
-        Snake.context.fillStyle = "white";
-        Snake.context.fillRect(0, 0, Snake.canvasWidth, Snake.canvasHeight);
-        Snake.context.strokeStyle = "black";
-        Snake.context.strokeRect(0, 0, Snake.canvasWidth, Snake.canvasHeight);
+        context.fillStyle = "white";
+        context.fillRect(0, 0, canvasWidth, canvasHeight);
+        context.strokeStyle = "black";
+        context.strokeRect(0, 0, canvasWidth, canvasHeight);
 
         //The movement code for the snake to come here.
         //The logic is simple
         //Pop out the tail cell and place it infront of the head cell
-        var nx = Snake.snake_array[0].x;
-        var ny = Snake.snake_array[0].y;
+        var nx = snake_array[0].x;
+        var ny = snake_array[0].y;
         //These were the position of the head cell.
         //We will increment it to get the new head position
         //Lets add proper direction based movement now
-        if(Snake.direction == "right") nx++;
-        else if(Snake.direction == "left") nx--;
-        else if(Snake.direction == "up") ny--;
-        else if(Snake.direction == "down") ny++;
+        if(direction == "right") nx++;
+        else if(direction == "left") nx--;
+        else if(direction == "up") ny--;
+        else if(direction == "down") ny++;
 
         //Lets add the game over clauses now
         //This will restart the game if the snake hits the wall
         //Lets add the code for body collision
         //Now if the head of the snake bumps into its body, the game will restart
-        if(nx <= -1 || nx >= Snake.canvasWidth/Snake.snakeNodeWidth || ny <= -1 || ny >= Snake.canvasHeight/Snake.snakeNodeWidth || Snake.check_collision(nx, ny, Snake.snake_array))
+        if(nx <= -1 || nx >= canvasWidth/snakeNodeWidth || ny <= -1 || ny >= canvasHeight/snakeNodeWidth || check_collision(nx, ny, snake_array))
         {
             //restart game
-            Snake.init();
+            that.init();
             //Lets organize the code a bit now.
             return;
         }
@@ -113,44 +108,44 @@ var Snake = new (function (){
             var tail = {x: nx, y: ny};
             score++;
             clearInterval(game_loop)
-            game_loop = setInterval(Snake.paint, 40);
+            game_loop = setInterval(paint, 40);
 
             //Create new food
-            Snake.create_food();
+            create_food();
         }
         else
         {
-            var tail = Snake.snake_array.pop(); //pops out the last cell
+            var tail = snake_array.pop(); //pops out the last cell
             tail.x = nx; tail.y = ny;
         }
         //The snake can now eat the food.
 
-        Snake.snake_array.unshift(tail); //puts back the tail as the first cell
+        snake_array.unshift(tail); //puts back the tail as the first cell
 
-        for(var i = 0; i < Snake.snake_array.length; i++)
+        for(var i = 0; i < snake_array.length; i++)
         {
-            var c = Snake.snake_array[i];
+            var c = snake_array[i];
             //Lets paint 10px wide cells
-            Snake.paint_cell(c.x, c.y);
+            paint_cell(c.x, c.y);
         }
 
         //Lets paint the food
-        Snake.paint_cell(foodPiece.x, foodPiece.y);
+        paint_cell(foodPiece.x, foodPiece.y);
         //Lets paint the score
         var score_text = "Score: " + score;
-        Snake.context.fillText(score_text, 5, Snake.canvasHeight-5);
+        context.fillText(score_text, 5, canvasHeight-5);
     };
 
     //Lets first create a generic function to paint cells
-    this.paint_cell= function(x, y)
+    var paint_cell= function(x, y)
     {
-        Snake.context.fillStyle = "blue";
-        Snake.context.fillRect(x*Snake.snakeNodeWidth, y*Snake.snakeNodeWidth, Snake.snakeNodeWidth, Snake.snakeNodeWidth);
-        Snake.context.strokeStyle = "white";
-        Snake.context.strokeRect(x*Snake.snakeNodeWidth, y*Snake.snakeNodeWidth, Snake.snakeNodeWidth, Snake.snakeNodeWidth);
+        context.fillStyle = "blue";
+        context.fillRect(x*snakeNodeWidth, y*snakeNodeWidth, snakeNodeWidth, snakeNodeWidth);
+        context.strokeStyle = "white";
+        context.strokeRect(x*snakeNodeWidth, y*snakeNodeWidth, snakeNodeWidth, snakeNodeWidth);
     };
 
-    this.check_collision= function(x, y, array)
+    var check_collision= function(x, y, array)
     {
         //This function will check if the provided x/y coordinates exist
         //in an array of cells or not
@@ -169,16 +164,16 @@ var Snake = new (function (){
 
     this.changeDirection = function(key){
     //We will add another clause to prevent reverse gear
-    if(key == "37" && Snake.direction != "right") Snake.direction = "left";
-    else if(key == "38" && Snake.direction != "down") Snake.direction = "up";
-    else if(key == "39" && Snake.direction != "left") Snake.direction = "right";
-    else if(key == "40" && Snake.direction != "up") Snake.direction = "down";
+    if(key == "37" && direction != "right") direction = "left";
+    else if(key == "38" && direction != "down") direction = "up";
+    else if(key == "39" && direction != "left") direction = "right";
+    else if(key == "40" && direction != "up") direction = "down";
     //The snake is now keyboard controllable
 
     };
 
     return{
-
+        //Here is the public API for the snake object.
         init:function(){
             that.init();
         },
@@ -191,12 +186,37 @@ var Snake = new (function (){
             that.stopPainting();
         },
 
+
+        //Read-only methods.
         score:function () {
-            that.score;
+            return score;
+        },
+
+        canvasWidth:function () {
+            return canvasWidth;
+        },
+
+        canvasHeight:function () {
+            return canvasHeight;
+        },
+
+        direction:function () {
+            return direction;
         }
+
     }
 
 
 
 
+});
+
+$(document).on('ready', function(){
+    Snake.init();
+
+    //keyboard controls
+    $(document).keydown(function(e){
+        var key = e.which;
+        Snake.changeDirection(key)
+    });
 });

@@ -94,7 +94,7 @@ var Snake = Snake || new (function (){
         if(nx <= -1 || nx >= canvasWidth/snakeNodeWidth || ny <= -1 || ny >= canvasHeight/snakeNodeWidth || check_collision(nx, ny, snake_array))
         {
             //restart game
-            that.init();
+            Snake.init();
             //Lets organize the code a bit now.
             return;
         }
@@ -162,12 +162,12 @@ var Snake = Snake || new (function (){
         clearInterval(game_loop)
     };
 
-    this.changeDirection = function(key){
+    this.changeDirection = function(newDirection){
     //We will add another clause to prevent reverse gear
-    if(key == "37" && direction != "right") direction = "left";
-    else if(key == "38" && direction != "down") direction = "up";
-    else if(key == "39" && direction != "left") direction = "right";
-    else if(key == "40" && direction != "up") direction = "down";
+    if(newDirection == "left" && direction != "right") direction = "left";
+    else if(newDirection == "up" && direction != "down") direction = "up";
+    else if(newDirection == "right" && direction != "left") direction = "right";
+    else if(newDirection == "down" && direction != "up") direction = "down";
     //The snake is now keyboard controllable
 
     };
@@ -180,6 +180,18 @@ var Snake = Snake || new (function (){
 
         changeDirection:function(key){
             that.changeDirection(key);
+        },
+
+        getHead:function(){
+            return snake_array[0];
+        },
+
+        getTail:function(){
+            return snake_array[snake_array.length-1];
+        },
+
+        getBody:function(){
+            return snake_array;
         },
 
         pause:function(){
@@ -217,6 +229,11 @@ $(document).on('ready', function(){
     //keyboard controls
     $(document).keydown(function(e){
         var key = e.which;
-        Snake.changeDirection(key)
+        if(key == "37") direction = "left";
+        else if(key == "38") direction = "up";
+        else if(key == "39") direction = "right";
+        else if(key == "40") direction = "down";
+
+        Snake.changeDirection(newDirection)
     });
 });

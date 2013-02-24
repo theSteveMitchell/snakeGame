@@ -1,10 +1,10 @@
 ## snakeGame
 
-The game of Snake is my "Hello World" equivalent.  It's my quest to create this game in every programming language I know, or to die trying.
+The game of Snake is my "Hello World" equivalent.  My quest is to create this game in every programming language I know, or to die trying.  I guess, preferrably the latter.
 
 Here is an example using mostly js and JQuery, hosted in Rails.
 
-##features
+##stack/features
 
 1. Jquery powered, using HTML 5 canvas.
 2. private javascript object with public api to prevent cheating.

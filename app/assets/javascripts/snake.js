@@ -229,10 +229,10 @@ $(document).on('ready', function(){
     //keyboard controls
     $(document).keydown(function(e){
         var key = e.which;
-        if(key == "37") direction = "left";
-        else if(key == "38") direction = "up";
-        else if(key == "39") direction = "right";
-        else if(key == "40") direction = "down";
+        if(key == "37") newDirection = "left";
+        else if(key == "38") newDirection = "up";
+        else if(key == "39") newDirection = "right";
+        else if(key == "40") newDirection = "down";
 
         Snake.changeDirection(newDirection)
     });

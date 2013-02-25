@@ -12,6 +12,7 @@ var Snake = Snake || new (function (){
     var direction;
     var foodPiece;
     var score;
+    var columnCount, rowCount;
 
     //Lets create the snake now
     this.snakeArray; //an array of cells to make up the snake
@@ -40,6 +41,14 @@ var Snake = Snake || new (function (){
         game_loop = setInterval(paint, 80);
     };
 
+    var column_count = function(){
+        return columnCount || canvasWidth/snakeNodeWidth;
+    }
+
+    var row_count = function(){
+        return rowCount || canvasHeight/snakeNodeWidth;
+    }
+
 
 
     var create_snake = function(length)
@@ -57,8 +66,8 @@ var Snake = Snake || new (function (){
     var create_food= function()
     {
         foodPiece = {
-            x: Math.round(Math.random()*(canvasWidth-snakeNodeWidth)/snakeNodeWidth),
-            y: Math.round(Math.random()*(canvasHeight-snakeNodeWidth)/snakeNodeWidth)
+            x: Math.round(Math.random()*(column_count())),
+            y: Math.round(Math.random()*(row_count()))
         };
         //This will create a cell with x/y between 0-44
         //Because there are 45(450/10) positions accross the rows and columns
@@ -91,7 +100,7 @@ var Snake = Snake || new (function (){
         //This will restart the game if the snake hits the wall
         //Lets add the code for body collision
         //Now if the head of the snake bumps into its body, the game will restart
-        if(nx <= -1 || nx >= canvasWidth/snakeNodeWidth || ny <= -1 || ny >= canvasHeight/snakeNodeWidth || check_collision(nx, ny, snake_array))
+        if(nx <= -1 || nx >= column_count() || ny <= -1 || ny >= row_count() || check_collision(nx, ny, snake_array))
         {
             //restart game
             Snake.init();
@@ -198,8 +207,8 @@ var Snake = Snake || new (function (){
             that.stopPainting();
         },
 
+        //Read-only methods:
 
-        //Read-only methods.
         score:function () {
             return score;
         },
@@ -217,9 +226,6 @@ var Snake = Snake || new (function (){
         }
 
     }
-
-
-
 
 });
 

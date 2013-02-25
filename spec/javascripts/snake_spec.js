@@ -20,12 +20,31 @@ describe('Snake js behavior', function(){
 
             expect(intervalSpy).toHaveBeenCalledWith(jasmine.any(Function), 80);
         });
+
+        it('should take some initialization parameters for canvas dimensions', function(){
+            Snake.init({"canvasWidth":200, "canvasHeight":20});
+            expect(Snake.canvasWidth()).toBe(200);
+            expect(Snake.canvasHeight()).toBe(20);
+        });
+
+        it('should take some initialization parameters for snake length', function(){
+            Snake.init({"snakeLength":1});
+            expect(Snake.getBody().length).toEqual(1);
+        });
+
+
+
+//        it('should take some initialization parameters for snake length/speed', function(){
+//            Snake.init({"speed":80, "snakeLength":2});
+//            expect(Snake.canvasWidth()).toBe(200);
+//            expect(Snake.canvasHeight()).toBe(20);
+//        });
     });
 
     describe('changeDirection', function(){
 
         beforeEach(function(){
-            Snake.init();
+            Snake.init({"canvasHeight":300, "canvasWidth":300, "snakeLength":15});
         });
 
         it('should update the direction of the snake', function(){
@@ -113,6 +132,7 @@ describe('Snake js behavior', function(){
         it('should update the position of the snake each paint cycle', function(){
             //Paint is a private method so we can't spy on it or call it directly.
             expect(Snake.getHead()).toEqual({ x : 14, y : 0 } );
+            expect(Snake.getTail()).toEqual({ x : 0, y : 0 } );
 
             jasmine.Clock.tick(80);
             expect(Snake.getHead()).toEqual({ x : 15, y : 0 } );
@@ -137,24 +157,60 @@ describe('Snake js behavior', function(){
             jasmine.Clock.tick(80);
             expect(initSpy).wasCalled();
             expect(Snake.getHead()).toEqual({ x : 14, y : 0 } );
+        });
+    });
 
+    describe('food getting', function(){
+        beforeEach(function(){
+            jasmine.Clock.useMock();
+            Snake.init({"canvasHeight":100, "canvasWidth":100, "snakeLength":1});
+
+        });
+
+        it('should place food within the canvas randomishly', function(){
+            expect(Snake.foodLocation()["x"]).toBeLessThan(10);
+            expect(Snake.foodLocation()["y"]).toBeLessThan(10);
+
+            expect(Snake.foodLocation()["x"]).toBeGreaterThan(-1);
+            expect(Snake.foodLocation()["y"]).toBeGreaterThan(-1);
 
         });
 
         it("should award points if the snake gets the food", function(){
-            expect(Snake.getHead()).toEqual({ x : 14, y : 0 } );
-            //should fail for now.  options:
-            //1. stub Math.random to return a known position for the food
-            //2. make food placement method nonprivate so I can stub that.
+            //This is a bit convoluted...Let's call this one an acceptance test.
+            food = Snake.foodLocation();
 
+            //starting at 0, so in the .1% chance that food spawns on 0,0, this test will fail.
+            deltaX = food["x"];
+            deltaY = food["y"];
 
-            jasmine.Clock.tick(80);
-            expect(Snake.score()).toEqual(1);
+            //tick the clock to let the snake crawl to the same column as the food.
+            jasmine.Clock.tick(80*deltaX);
+            console.log("Snake is at x" + Snake.getHead()["x"] );
+
+            //tick the clock to let the snake crawl down to the food.
+            Snake.changeDirection("down");
+            jasmine.Clock.tick(80*deltaY);
+
+            //Snake should have grabbed the food.
+            //console.log("snake is at x" + Snake.getHead()["x"] + ", y" + Snake.getHead()["y"] );
+            expect(Snake.score()).toBe(1);
+            //new food should be placed, in a different spot on the board.
+            food = Snake.foodLocation();
+            expect(food).not.toEqual({"x": deltaX, "y":deltaY})
+            expect(food["x"]).toBeLessThan(10);
+            expect(food["y"]).toBeLessThan(10);
+
+            expect(food["x"]).toBeGreaterThan(-1);
+            expect(food["y"]).toBeGreaterThan(-1);
 
         });
 
 
     });
+
+
+
 
 
 

@@ -12,25 +12,27 @@ var Snake = Snake || new (function (){
     var direction;
     var foodPiece;
     var score;
-    var columnCount, rowCount;
+    var foodPiece;
 
     //Lets create the snake now
     this.snakeArray; //an array of cells to make up the snake
 
 
 
-    this.init = function()
+    this.init = function(options)
     {
+        options = $.extend({}, options);
+
         canvas = $("#canvas")[0]
         if(canvas === undefined){
             return;
         }
         context = canvas.getContext("2d");
-        canvasWidth = $("#canvas").width();
-        canvasHeight = $("#canvas").height();
+        canvasWidth = options["canvasWidth"] || canvasWidth || $("#canvas").width();
+        canvasHeight = options["canvasHeight"] || canvasHeight || $("#canvas").height();
 
         direction = "right"; //default direction
-        create_snake(15);
+        create_snake(options["snakeLength"] || 15);
         create_food(); //Now we can see the food particle
         //finally lets display the score
         score = 0;
@@ -41,15 +43,13 @@ var Snake = Snake || new (function (){
         game_loop = setInterval(paint, 80);
     };
 
-    var column_count = function(){
-        return columnCount || canvasWidth/snakeNodeWidth;
-    }
+    var max_column = function(){
+        return (canvasWidth/snakeNodeWidth)-1;
+    };
 
-    var row_count = function(){
-        return rowCount || canvasHeight/snakeNodeWidth;
-    }
-
-
+    var max_row = function(){
+        return (canvasHeight/snakeNodeWidth)-1;
+    };
 
     var create_snake = function(length)
     {
@@ -66,8 +66,8 @@ var Snake = Snake || new (function (){
     var create_food= function()
     {
         foodPiece = {
-            x: Math.round(Math.random()*(column_count())),
-            y: Math.round(Math.random()*(row_count()))
+            x: Math.round(Math.random()*(max_column())),
+            y: Math.round(Math.random()*(max_row()))
         };
         //This will create a cell with x/y between 0-44
         //Because there are 45(450/10) positions accross the rows and columns
@@ -100,7 +100,7 @@ var Snake = Snake || new (function (){
         //This will restart the game if the snake hits the wall
         //Lets add the code for body collision
         //Now if the head of the snake bumps into its body, the game will restart
-        if(nx <= -1 || nx >= column_count() || ny <= -1 || ny >= row_count() || check_collision(nx, ny, snake_array))
+        if(nx <= -1 || nx >= max_column() || ny <= -1 || ny >= max_row() || check_collision(nx, ny, snake_array))
         {
             //restart game
             Snake.init();
@@ -114,22 +114,22 @@ var Snake = Snake || new (function (){
         //Create a new head instead of moving the tail
         if(nx == foodPiece.x && ny == foodPiece.y)
         {
-            var tail = {x: nx, y: ny};
+            var head = {x: nx, y: ny};
             score++;
-            clearInterval(game_loop)
-            game_loop = setInterval(paint, 40);
+            //clearInterval(game_loop)
+            //game_loop = setInterval(paint, 40);
 
             //Create new food
             create_food();
         }
         else
         {
-            var tail = snake_array.pop(); //pops out the last cell
-            tail.x = nx; tail.y = ny;
+            var head = snake_array.pop(); //pops out the last cell
+            head.x = nx; head.y = ny;
         }
         //The snake can now eat the food.
 
-        snake_array.unshift(tail); //puts back the tail as the first cell
+        snake_array.unshift(head); //puts back the tail as the first cell
 
         for(var i = 0; i < snake_array.length; i++)
         {
@@ -183,8 +183,8 @@ var Snake = Snake || new (function (){
 
     return{
         //Here is the public API for the snake object.
-        init:function(){
-            that.init();
+        init:function(options){
+            that.init(options);
         },
 
         changeDirection:function(key){
@@ -223,6 +223,10 @@ var Snake = Snake || new (function (){
 
         direction:function () {
             return direction;
+        },
+
+        foodLocation:function(){
+            return foodPiece;
         }
 
     }
@@ -230,7 +234,7 @@ var Snake = Snake || new (function (){
 });
 
 $(document).on('ready', function(){
-    Snake.init();
+    //Snake.init();
 
     //keyboard controls
     $(document).keydown(function(e){

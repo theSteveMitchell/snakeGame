@@ -12,10 +12,9 @@ var Snake = Snake || new (function (){
     var direction;
     var foodPiece;
     var score;
-    var foodPiece;
 
     //Lets create the snake now
-    this.snakeArray; //an array of cells to make up the snake
+    var snake_array; //an array of cells to make up the snake
 
 
 
@@ -234,7 +233,7 @@ var Snake = Snake || new (function (){
 });
 
 $(document).on('ready', function(){
-    //Snake.init();
+    Snake.init();
 
     //keyboard controls
     $(document).keydown(function(e){

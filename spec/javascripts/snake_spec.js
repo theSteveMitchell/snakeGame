@@ -101,7 +101,7 @@ describe('Snake js behavior', function(){
             Snake.init();
         });
 
-        it('should give the location of the head node', function(){
+        it('should give the location of the tail node', function(){
             expect(Snake.getTail()).toEqual({ x : 0, y : 0 } );
         });
     });
@@ -112,7 +112,7 @@ describe('Snake js behavior', function(){
             Snake.init();
         });
 
-        it('should give the location of the head node', function(){
+        it('should give the locations of all the snake nodes', function(){
             body = Snake.getBody();
             //TODO assumes a staring length of 15, which is bad....
             expect(body.length).toBe(15);

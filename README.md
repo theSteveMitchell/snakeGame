@@ -14,7 +14,7 @@ Here is an example using mostly js and JQuery, hosted in Rails.
 ##planned features
 1. replace green blocks with rounded blocks/images
 2. replace food blocks with custom image
-3. round body segments, 360-degree movement instead of 4-directional.
+3. 8-directional or full 360-degree movement instead of 4-directional.
 4. Rails 4 -- when it's available
 5. sounds, intro and styling.
 6. enhance keyboard control for play/pause.

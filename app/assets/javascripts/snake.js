@@ -15,6 +15,7 @@ var Snake = Snake || new (function (){
 
     //Lets create the snake now
     var snake_array; //an array of cells to make up the snake
+    var painting;
 
 
 
@@ -39,7 +40,8 @@ var Snake = Snake || new (function (){
         //Lets move the snake now using a timer which will trigger the paint function
         //every 80ms
         if(typeof game_loop != "undefined") clearInterval(game_loop);
-        game_loop = setInterval(move_snake, 80);
+        game_loop = setInterval(move_snake, 10);
+        painting = true;
     };
 
     var max_column = function(){
@@ -159,7 +161,8 @@ var Snake = Snake || new (function (){
 
     this.stopPainting = function()
     {
-        clearInterval(game_loop)
+        clearInterval(game_loop);
+        painting = false;
     };
 
     this.changeDirection = function(newDirection){
@@ -196,6 +199,9 @@ var Snake = Snake || new (function (){
 
         pause:function(){
             that.stopPainting();
+        },
+        paused:function(){
+            return !painting;
         },
 
         //Read-only methods:

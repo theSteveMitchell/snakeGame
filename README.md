@@ -21,5 +21,6 @@ Here is an example using mostly js and JQuery, hosted in Rails.
 7. user accounts with score keeping
 9. auto-pilot/bot.  kinda prerequisite for #9.
 8. multiplayer mode....contact server through ajax to update your position, query server for opponent's position.
+9. Make this a rails engine, so you can include it in any website with a bundle install. 
 
 
